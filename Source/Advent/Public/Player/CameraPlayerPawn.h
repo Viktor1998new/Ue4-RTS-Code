@@ -35,6 +35,9 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = Camera)
 		bool IsRatation;
 
+	UPROPERTY(BlueprintReadWrite, Category = "PawnCamera", meta = (ExposeOnSpawn = "true"))
+		APlayerController* Player;
+
 protected:
 
 	UPROPERTY(Category = Components, VisibleDefaultsOnly, meta = (AllowPrivateAccess = "true"))

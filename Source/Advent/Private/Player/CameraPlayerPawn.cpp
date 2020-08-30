@@ -29,7 +29,6 @@ ACameraPlayerPawn::ACameraPlayerPawn()
 void ACameraPlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void ACameraPlayerPawn::AddArmLenght(float Axis, float Speed)
@@ -60,9 +59,8 @@ void ACameraPlayerPawn::SetEnableMove(bool NewEnable) {
 
 FVector2D ACameraPlayerPawn::CameraMove() {
 
-	if (Cast<APlayerController>(GetController())) {
+	if (IsValid(Player)) {
 
-		APlayerController * Player = Cast<APlayerController>(GetController());
 		float MouseX, MouseY;
 
 		if (!Player->GetMousePosition(MouseX, MouseY)) {

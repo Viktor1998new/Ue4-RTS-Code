@@ -10,6 +10,7 @@
 
 void ABasicPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ABasicPlayerController, CharacterSelects);
 }
 
