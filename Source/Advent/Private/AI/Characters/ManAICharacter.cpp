@@ -18,11 +18,6 @@ AManAICharacter::AManAICharacter(const FObjectInitializer& ObjectInitializer)
 	CharacteristicComponent = CreateDefaultSubobject<UCharacteristicComponent>(TEXT("CharacteristicComponent"));
 }
 
-bool AManAICharacter::IsCommand(FLinearColor Verifiable)
-{
-	return Command == Verifiable;
-}
-
 EPriorities AManAICharacter::GetPriorities() {
 	if (Cast<AManAIController>(GetController())) {
 		return Cast<AManAIController>(GetController())->Priorities;
@@ -48,14 +43,4 @@ void AManAICharacter::SetCommand(ABasicPlayerController * PlayerController, bool
 
 		Command = PlayerController->Command;
 	}
-}
-
-void AManAICharacter::SetSelectEnabled(bool NewEnable)
-{
-	ReceiveSelectEnabled(NewEnable);
-}
-
-void AManAICharacter::SetTarget(FVector Destination, AActor * ActorTarget, bool Run)
-{
-	ReceiveSetTarget(Destination, ActorTarget, Run);
 }

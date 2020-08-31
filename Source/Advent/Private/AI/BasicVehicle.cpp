@@ -2,6 +2,7 @@
 
 #include "BasicVehicle.h"
 #include "AI/Characters/ManAICharacter.h"
+#include "Components/CapsuleComponent.h"
 #include "Inventory/InventoryComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -27,13 +28,13 @@ bool ABasicVehicle::GetPlace(int &IndexPlaces)
 
 bool ABasicVehicle::UseVehicle(AManAICharacter * ManCharacter)
 {
-	int L_IndexPlace;
+	int L_IndexPlace = -1;
 
 		if (GetPlace(L_IndexPlace)&& GetVehicleMovement()->GetForwardSpeed() == 0) {
 			
 			ManCharacter->IsUseVehicle = true;
 			Places[L_IndexPlace].Man = ManCharacter;
-			
+			ManCharacter->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			ManCharacter->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform, NAME_None);
 
 			if (!Places[L_IndexPlace].Visibility) {
@@ -52,14 +53,15 @@ bool ABasicVehicle::UseVehicle(AManAICharacter * ManCharacter)
 
 void ABasicVehicle::ExitVehicle(AManAICharacter * ManCharacter)
 {
-	for (int i = 0; i < Places.Num(); i++)
+	for (FPlaceStruct ElementArray : Places)
 	{
-		if (IsValid(Places[i].Man)) {
+		if (IsValid(ElementArray.Man)) {
 			
-			if (Places[i].Man == ManCharacter) {
-				Places[i].Man = nullptr;
+			if (ElementArray.Man == ManCharacter) {
+				ElementArray.Man = nullptr;
+				ManCharacter->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 				ManCharacter->IsUseVehicle = false;
-				ManCharacter->SetActorRelativeLocation(Places[i].ExitLocation);
+				ManCharacter->SetActorRelativeLocation(ElementArray.ExitLocation);
 				ManCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 				ManCharacter->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 			}

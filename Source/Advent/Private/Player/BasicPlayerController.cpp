@@ -2,7 +2,8 @@
 
 #include "BasicPlayerController.h"
 #include "GamePlay/BasicHUD.h"
-#include "AI/Characters/ManAICharacter.h"
+#include "GameFramework/Pawn.h"
+#include "InterfaceSelectPawn.h"
 #include "Player/CameraPlayerPawn.h"
 #include "Runtime/Engine/Public/CollisionQueryParams.h"
 #include "Engine/Public/TimerManager.h"
@@ -93,7 +94,7 @@ void ABasicPlayerController::OnLeftMouseButtonReleased() {
 
 
 	bool IsSelectNull;
-	TArray<AManAICharacter*> SelectUnit;
+	TArray<APawn*> SelectUnit;
 	FHitResult L_HitMouse;
 	Cast<ABasicHUD>(GetHUD())->SelectDisable(IsSelectNull, SelectUnit);
 
@@ -101,17 +102,19 @@ void ABasicPlayerController::OnLeftMouseButtonReleased() {
 	{
 
 		GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Camera), true, L_HitMouse);
+		
+		APawn* HitPawn = Cast<APawn>(L_HitMouse.GetActor());
 
-		if (IsValid(L_HitMouse.GetActor()) && Cast<AManAICharacter>(L_HitMouse.GetActor())) {
+		if (IsValid(HitPawn)) {
+				if (IInterfaceSelectPawn::Execute_IsCommand(HitPawn, Command)) {
 
-			if (Cast<AManAICharacter>(L_HitMouse.GetActor())->IsCommand(Command)) {
+					ClearListSelect();
+					TArray<APawn*> NewSelectUnit;
+					NewSelectUnit.Add(HitPawn);
+					SetListSelectUnit(NewSelectUnit);
+					return;
+				}
 
-				ClearListSelect();
-				TArray<AManAICharacter*> NewSelectUnit;
-				NewSelectUnit.Add(Cast<AManAICharacter>(L_HitMouse.GetActor()));
-				SetListSelectUnit(NewSelectUnit);
-				return;
-			}
 
 			if (CharacterSelects.IsValidIndex(0)) {
 
@@ -154,37 +157,37 @@ void ABasicPlayerController::DoubleClick() {
 	CountClick = 0;
 }
 
-void ABasicPlayerController::SetListSelectUnit_Implementation(const TArray<AManAICharacter*>& NewList)
+void ABasicPlayerController::SetListSelectUnit_Implementation(const TArray<APawn*>& NewList)
 {
 	if (CharacterSelects.IsValidIndex(0)) {
-		for(AManAICharacter* ElementArray : CharacterSelects)
+		for(APawn* ElementArray : CharacterSelects)
 		{
 			SendEnableSelect(ElementArray, false);
 		}
 		CharacterSelects.Empty();
 	}
 
-	for (AManAICharacter * ElementArray : NewList)
+	for (APawn* ElementArray : NewList)
 	{
-		if (ElementArray->IsCommand(Command) && !ElementArray->IsUseVehicle && !ElementArray->IsDeath()) {
+		if (IInterfaceSelectPawn::Execute_IsCommand(ElementArray,Command) && !IInterfaceSelectPawn::Execute_IsUseVehicle(ElementArray) && !IInterfaceSelectPawn::Execute_IsDeath(ElementArray)) {
 			SendEnableSelect(ElementArray, true);
 			CharacterSelects.Add(ElementArray);
 		}
 	}
 }
 
-bool ABasicPlayerController::SetListSelectUnit_Validate(const TArray<AManAICharacter*>& NewList)
+bool ABasicPlayerController::SetListSelectUnit_Validate(const TArray<APawn*>& NewList)
 {
 	return true;
 }
 
 void ABasicPlayerController::SendUnitTarget_Implementation(FVector Destination, AActor* ActorTarget, bool Run, bool StatusView)
 {
-	for(AManAICharacter * ElementArray : CharacterSelects) {
+	for(APawn* ElementArray : CharacterSelects) {
 		
-		if (!ElementArray->IsUseVehicle && !ElementArray->IsDeath()) {
-			ElementArray->SetTarget(Destination, ActorTarget, Run);
-			ElementArray->StatusView = StatusView;
+		if (!IInterfaceSelectPawn::Execute_IsUseVehicle(ElementArray) && !IInterfaceSelectPawn::Execute_IsDeath(ElementArray)) {
+			IInterfaceSelectPawn::Execute_SetTarget(ElementArray,Destination, ActorTarget, Run);
+			//Cast<IInterfaceSelectPawn>(ElementArray)->StatusView = StatusView;
 		}
 		else
 		{
@@ -201,7 +204,7 @@ bool ABasicPlayerController::SendUnitTarget_Validate(FVector Destination, AActor
 void ABasicPlayerController::ClearListSelect_Implementation()
 {
 
-	for(AManAICharacter * ElementArray : CharacterSelects)
+	for(APawn* ElementArray : CharacterSelects)
 	{
 		SendEnableSelect(ElementArray, false);
 	}
@@ -213,12 +216,12 @@ bool ABasicPlayerController::ClearListSelect_Validate()
 	return true;
 }
 
-void ABasicPlayerController::SendEnableSelect_Implementation(AManAICharacter * Unit, bool NewEnable)
+void ABasicPlayerController::SendEnableSelect_Implementation(APawn* Unit, bool NewEnable)
 {
-	Unit->SetSelectEnabled(NewEnable);
+	IInterfaceSelectPawn::Execute_SetSelectEnabled(Unit,NewEnable);
 }
 
-bool ABasicPlayerController::SendEnableSelect_Validate(AManAICharacter * Unit, bool NewEnable)
+bool ABasicPlayerController::SendEnableSelect_Validate(APawn* Unit, bool NewEnable)
 {
 	return true;
 }

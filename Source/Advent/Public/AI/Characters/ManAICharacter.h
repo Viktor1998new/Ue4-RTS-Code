@@ -66,25 +66,8 @@ public:
 			return StatusView;
 		};
 
-
-	UFUNCTION(BlueprintPure)
-		bool IsCommand(FLinearColor Verifiable);
-
 	UFUNCTION(BlueprintCallable)
 		virtual void SetCommand(ABasicPlayerController * PlayerController,bool AI);
-
-	UFUNCTION(BlueprintCallable)
-		virtual void SetSelectEnabled(bool NewEnable);
-
-	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "SelectEnable"))
-		void ReceiveSelectEnabled(bool NewEnable);
-
-	UFUNCTION(BlueprintCallable)
-		virtual void SetTarget(FVector Destination, AActor* ActorTarget, bool Run);
-
-	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "SetTarget"))
-		void ReceiveSetTarget(FVector Destination, AActor* ActorTarget, bool Run);
-
 
 	UFUNCTION(BlueprintPure)
 		FLinearColor GetCommand() const {

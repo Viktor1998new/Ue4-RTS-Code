@@ -29,6 +29,8 @@ ACameraPlayerPawn::ACameraPlayerPawn()
 void ACameraPlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
+
+	ArmLenght = SpringArm->TargetArmLength;
 }
 
 void ACameraPlayerPawn::AddArmLenght(float Axis, float Speed)

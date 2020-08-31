@@ -3,11 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InterfaceSelectPawn.h"
 #include "GameFramework/Character.h"
 #include "BasicAICharacter.generated.h"
 
 UCLASS(abstract)
-class ADVENT_API ABasicAICharacter : public ACharacter
+class ADVENT_API ABasicAICharacter : public ACharacter, public IInterfaceSelectPawn
 {
 	GENERATED_BODY()
 
@@ -26,11 +27,5 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "SetEnableRun"))
 		void ReceiveSetEnableRun(bool Enable);
-
-	UFUNCTION(BlueprintPure)
-		virtual bool IsDeath();
-
-	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "IsDeath"))
-		bool ReceiveIsDeath();
 
 };

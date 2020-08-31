@@ -7,6 +7,7 @@
 #include "AI/Characters/ManAICharacter.h"
 #include "BasicHUD.generated.h"
 
+class APawn;
 /**
  * 
  */
@@ -15,7 +16,7 @@ class ADVENT_API ABasicHUD : public AHUD
 {
 	GENERATED_BODY()
 	
-		TArray<AManAICharacter*> Selects;
+		TArray<APawn*> Selects;
 		bool Select;
 		FVector2D InitialPoint;
 
@@ -25,5 +26,5 @@ public:
 
 	void SelectEnable();
 
-	void SelectDisable(bool &IsSelectNull, TArray<AManAICharacter*> &SelectUnit);
+	void SelectDisable(bool &IsSelectNull, TArray<APawn*> &SelectUnit);
 };

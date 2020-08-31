@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "WheeledVehicle.h"
+#include "InterfaceSelectPawn.h"
 #include "BasicVehicle.generated.h"
 
 
@@ -30,7 +31,7 @@ struct FPlaceStruct
  * 
  */
 UCLASS(abstract)
-class ADVENT_API ABasicVehicle : public AWheeledVehicle
+class ADVENT_API ABasicVehicle : public AWheeledVehicle, public IInterfaceSelectPawn
 {
 	GENERATED_BODY()
 
@@ -51,6 +52,4 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void ExitVehicle(AManAICharacter* ManCharacter);
-
-
 };

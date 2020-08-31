@@ -20,8 +20,3 @@ void ABasicAICharacter::SetEnableRun(bool Enable)
 {
 	ReceiveSetEnableRun(Enable);
 }
-
-bool ABasicAICharacter::IsDeath()
-{
-	return ReceiveIsDeath();
-}

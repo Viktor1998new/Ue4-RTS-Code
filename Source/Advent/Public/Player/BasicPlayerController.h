@@ -6,7 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "BasicPlayerController.generated.h"
 
-class AManAICharacter;
+class APawn;
 
 /**
  * 
@@ -30,7 +30,7 @@ public:
 		FLinearColor Command;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated)
-		TArray<AManAICharacter*> CharacterSelects;
+		TArray<APawn*> CharacterSelects;
 
 	UFUNCTION(BlueprintCallable)
 		void SetCommand(FLinearColor NewCommand);
@@ -56,11 +56,11 @@ protected:
 	virtual void GetLifetimeReplicatedProps(TArray <FLifetimeProperty> & OutLifetimeProps)  const override;
 
 	UFUNCTION(Server, Reliable, WithValidation)
-		void SetListSelectUnit(const TArray<AManAICharacter*>& NewList);
+		void SetListSelectUnit(const TArray<APawn*>& NewList);
 
-		void SetListSelectUnit_Implementation(const TArray<AManAICharacter*>& NewList);
+		void SetListSelectUnit_Implementation(const TArray<APawn*>& NewList);
 
-		bool SetListSelectUnit_Validate(const TArray<AManAICharacter*>& NewList);
+		bool SetListSelectUnit_Validate(const TArray<APawn*>& NewList);
 
 
 	UFUNCTION(Server, Reliable, WithValidation)
@@ -78,9 +78,9 @@ protected:
 		bool ClearListSelect_Validate();
 
 		UFUNCTION(Client, Reliable)
-			void SendEnableSelect(AManAICharacter* Unit, bool NewEnable);
+			void SendEnableSelect(APawn* Unit, bool NewEnable);
 
-		void SendEnableSelect_Implementation(AManAICharacter* Unit, bool NewEnable);
+		void SendEnableSelect_Implementation(APawn* Unit, bool NewEnable);
 
-		bool SendEnableSelect_Validate(AManAICharacter* Unit, bool NewEnable);
+		bool SendEnableSelect_Validate(APawn* Unit, bool NewEnable);
 };
