@@ -55,35 +55,44 @@ void ABasicPlayerController::OnRightMouseButtonPressed() {
 		L_CameraPawn->IsRatation = true;
 
 		GetMousePosition(initalMousePosition.X, initalMousePosition.Y);
-		
 	}
+	CountClick++;
+
+	if (!GetWorldTimerManager().IsTimerActive(UnusedHandle))
+		GetWorldTimerManager().SetTimer(UnusedHandle, this, &ABasicPlayerController::DoubleClick, 0.50f, false);
+
 }
 
 void ABasicPlayerController::OnRightMouseButtonReleased() {
 
 	ACameraPlayerPawn* L_CameraPawn = Cast<ACameraPlayerPawn>(GetPawn());
 
+	FVector2D MousePosition;
+	GetMousePosition(MousePosition.X, MousePosition.Y);
+
 	if (IsValid(L_CameraPawn)) {
 		L_CameraPawn->IsRatation = false;
+	}
 
-		FVector2D MousePosition;
-		GetMousePosition(MousePosition.X, MousePosition.Y);
+	if (initalMousePosition == MousePosition) {
 		
-		if (initalMousePosition == MousePosition) {
-			ClearListSelect();
+		FHitResult L_HitMouse;
+
+		if (CharacterSelects.IsValidIndex(0)) {
+
+			bool Run = CountClick >= 2;
+			GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Camera), true, L_HitMouse);
+			SendUnitTarget(L_HitMouse.Location, L_HitMouse.GetActor(), Run, View);
 		}
 	}
 }
 
 void ABasicPlayerController::OnLeftMouseButtonPressed() {
 
+	ClearListSelect();
+	
 	GetMousePosition(initalMousePosition.X, initalMousePosition.Y);
 	Cast<ABasicHUD>(GetHUD())->SelectEnable();
-	
-	CountClick++;
-
-	if (!GetWorldTimerManager().IsTimerActive(UnusedHandle))
-		GetWorldTimerManager().SetTimer(UnusedHandle, this, &ABasicPlayerController::DoubleClick, 0.50f, false);
 
 }
 
@@ -92,7 +101,6 @@ void ABasicPlayerController::OnLeftMouseButtonReleased() {
 	FVector2D MousePosition;
 	GetMousePosition(MousePosition.X, MousePosition.Y);
 
-
 	bool IsSelectNull;
 	TArray<APawn*> SelectUnit;
 	FHitResult L_HitMouse;
@@ -100,55 +108,22 @@ void ABasicPlayerController::OnLeftMouseButtonReleased() {
 
 	if (FVector2D(initalMousePosition - MousePosition).Size()<5)
 	{
-
 		GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Camera), true, L_HitMouse);
 		
 		APawn* HitPawn = Cast<APawn>(L_HitMouse.GetActor());
 
 		if (IsValid(HitPawn)) {
-				if (IInterfaceSelectPawn::Execute_IsCommand(HitPawn, Command)) {
 
-					ClearListSelect();
-					TArray<APawn*> NewSelectUnit;
-					NewSelectUnit.Add(HitPawn);
-					SetListSelectUnit(NewSelectUnit);
-					return;
-				}
-
-
-			if (CharacterSelects.IsValidIndex(0)) {
-
-				GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Camera), true, L_HitMouse);
-				SendUnitTarget(L_HitMouse.Location, L_HitMouse.GetActor(), false, View);
-
-				if (CountClick >= 2) {
-
-					GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Camera), true, L_HitMouse);
-					SendUnitTarget(L_HitMouse.Location, L_HitMouse.GetActor(), true, View);
-				}
-			}
+			ClearListSelect();
+			TArray<APawn*> NewSelectUnit;
+			NewSelectUnit.Add(HitPawn);
+			SetListSelectUnit(NewSelectUnit);
 			return;
 		}
-
-		if (CharacterSelects.IsValidIndex(0)) {
-
-			GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Camera), true, L_HitMouse);
-			SendUnitTarget(L_HitMouse.Location, L_HitMouse.GetActor(), false,View);
-
-			if (CountClick >= 2) {
-
-				GetHitResultUnderCursorByChannel(UEngineTypes::ConvertToTraceType(ECC_Camera), true, L_HitMouse);
-				SendUnitTarget(L_HitMouse.Location, L_HitMouse.GetActor(), true, View);
-			}
-		}
-		return;
 	}
 
 	if (!IsSelectNull) {
 		SetListSelectUnit(SelectUnit);
-	}
-	else {
-		ClearListSelect();
 	}
 }
 
@@ -159,6 +134,7 @@ void ABasicPlayerController::DoubleClick() {
 
 void ABasicPlayerController::SetListSelectUnit_Implementation(const TArray<APawn*>& NewList)
 {
+
 	if (CharacterSelects.IsValidIndex(0)) {
 		for(APawn* ElementArray : CharacterSelects)
 		{

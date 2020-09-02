@@ -36,14 +36,14 @@ class ADVENT_API ABasicVehicle : public AWheeledVehicle, public IInterfaceSelect
 	GENERATED_BODY()
 
 public:
+	
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+		TArray<FPlaceStruct> Places;
 
 	ABasicVehicle(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	UPROPERTY(Category = Components, BlueprintReadOnly, VisibleDefaultsOnly, meta = (AllowPrivateAccess = "true"))
 		UInventoryComponent * InventoryComponent;
-	
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-		TArray<FPlaceStruct> Places;
 
 		bool GetPlace(int &IndexPlaces);
 	
@@ -52,4 +52,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void ExitVehicle(AManAICharacter* ManCharacter);
+
+	virtual bool IsCommand_Implementation(FLinearColor ColorCommand) override;
 };

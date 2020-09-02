@@ -7,12 +7,14 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "WheeledVehicleMovementComponent.h"
+#include "UnrealNetwork.h"
 
 ABasicVehicle::ABasicVehicle(const FObjectInitializer& ObjectInitializer)
 {
 
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 }
+
 
 bool ABasicVehicle::GetPlace(int &IndexPlaces)
 {
@@ -35,6 +37,7 @@ bool ABasicVehicle::UseVehicle(AManAICharacter * ManCharacter)
 			ManCharacter->IsUseVehicle = true;
 			Places[L_IndexPlace].Man = ManCharacter;
 			ManCharacter->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			ManCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 			ManCharacter->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform, NAME_None);
 
 			if (!Places[L_IndexPlace].Visibility) {
@@ -64,7 +67,19 @@ void ABasicVehicle::ExitVehicle(AManAICharacter * ManCharacter)
 				ManCharacter->SetActorRelativeLocation(ElementArray.ExitLocation);
 				ManCharacter->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
 				ManCharacter->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+				return;
 			}
 		}
 	}
+}
+
+bool ABasicVehicle::IsCommand_Implementation(FLinearColor ColorCommand)
+{
+	for (FPlaceStruct ElementArray : Places)
+	{
+		if (IsValid(ElementArray.Man)) {
+			return	IInterfaceSelectPawn::Execute_IsCommand(ElementArray.Man, ColorCommand);
+		}
+	}
+	return false;
 }

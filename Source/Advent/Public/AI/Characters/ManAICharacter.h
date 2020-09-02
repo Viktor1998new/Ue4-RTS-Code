@@ -46,14 +46,20 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 		UTexture2D * Image;
 
-	bool IsUseVehicle;
+	UPROPERTY(ReplicatedUsing = OnRep_VehicleTrigger)
+		bool IsUseVehicle;
 
 	bool StatusView;
 
+protected:
+	virtual void GetLifetimeReplicatedProps(TArray <FLifetimeProperty>& OutLifetimeProps)  const override;
 
 public:
 	// Sets default values for this character's properties
 	AManAICharacter(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	UFUNCTION()
+		void OnRep_VehicleTrigger();
 
 	UFUNCTION(BlueprintPure)
 		EPriorities GetPriorities();
@@ -65,6 +71,10 @@ public:
 		bool IsStatusView() const {
 			return StatusView;
 		};
+
+	virtual bool IsUseVehicle_Implementation() override {
+		return IsUseVehicle;
+	};
 
 	UFUNCTION(BlueprintCallable)
 		virtual void SetCommand(ABasicPlayerController * PlayerController,bool AI);
